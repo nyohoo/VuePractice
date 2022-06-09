@@ -1,10 +1,14 @@
 <template>
-  <div>チャットルームです</div>
+  <div class="container">
+    <NabvarPage />
+  </div>
 </template>
 
 <script>
-export default {
+import NabvarPage from '../components/NabvarPage.vue'
 
+export default {
+  components: { NabvarPage },
 }
 </script>
 
