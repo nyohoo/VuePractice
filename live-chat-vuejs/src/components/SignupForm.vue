@@ -43,6 +43,10 @@ export default {
         }
 
         if (!this.error) {
+          window.localStorage.setItem('access-token', res.headers['access-token'])
+          window.localStorage.setItem('client', res.headers.client)
+          window.localStorage.setItem('uid', res.headers.uid)
+          window.localStorage.setItem('name', res.data.data.name)
           this.$emit('redirectToChatRoom')
         }
 
