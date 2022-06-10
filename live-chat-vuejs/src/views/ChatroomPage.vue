@@ -2,6 +2,7 @@
   <div class="container">
     <NabvarPage />
     <ChatWindow :messages="messages" />
+    <NewChatForm @connectCable="connectCable" />
   </div>
 </template>
 
@@ -9,9 +10,11 @@
 import NabvarPage from '../components/NabvarPage'
 import ChatWindow from '../components/ChatWindow'
 import axios from 'axios'
+import NewChatForm from '../components/NewChatForm.vue'
+import ActionCable from 'actioncable'
 
 export default {
-  components: { NabvarPage, ChatWindow },
+  components: { NabvarPage, ChatWindow, NewChatForm },
   data () {
     return {
       messages: [],
@@ -37,10 +40,27 @@ export default {
         console.log(err)
       }
     },
+    connectCable (message) {
+      this.messageChannel.perform('receive', {
+        message: message,
+        email: window.localStorage.getItem('uid')
+      })
+    }
   },
   mounted () {
-    this.getMessages()
+    const cable = ActionCable.createConsumer('ws://localhost:3000/cable')
+    this.messageChannel = cable.subscriptions.create('RoomChannel', {
+      connected: () => {
+        this.getMessages()
+      },
+      received: () => {
+        this.getMessages()
+      }
+    })
   },
+  beforeUnmount () {
+    this.messageChannel.unsubscribe()
+  }
 }
 </script>
 
