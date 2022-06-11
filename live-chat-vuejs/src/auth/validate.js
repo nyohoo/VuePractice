@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ref } from 'vue'
+import removeItem from './removeItem'
 
 const error = ref(null)
 
@@ -26,11 +27,7 @@ const validate = async () => {
     return res
   } catch(err) {
     error.value = '認証に失敗しました'
-
-    window.localStorage.removeItem('uid')
-    window.localStorage.removeItem('access-token')
-    window.localStorage.removeItem('client')
-    window.localStorage.removeItem('name')
+    removeItem()
   }
 }
 
