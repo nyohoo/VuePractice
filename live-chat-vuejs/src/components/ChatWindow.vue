@@ -1,6 +1,6 @@
 <template>
   <div class="chat-window">
-    <div v-if="messages" class="messages">
+    <div v-if="messages" class="messages" ref="messages">
       <ul v-for="message in messages" :key="message.id">
         <li :class="{ received: message.email !== uid, sent: message.email == uid }">
           <span class="name">{{ message.name }}</span>
@@ -62,24 +62,28 @@ export default {
       }
     },
     async deleteLike(likeId) {
-  try {
-    const res = await axios.delete(`http://localhost:3000/likes/${likeId}`,
-    {
-      headers: {
-        uid: this.uid,
-        "access-token": window.localStorage.getItem('access-token'),
-        client: window.localStorage.getItem('client')
-      }
-    })
+      try {
+        const res = await axios.delete(`http://localhost:3000/likes/${likeId}`,
+        {
+          headers: {
+            uid: this.uid,
+            "access-token": window.localStorage.getItem('access-token'),
+            client: window.localStorage.getItem('client')
+          }
+        })
 
-    if (!res) {
-      new Error('いいねを削除できませんでした')
+        if (!res) {
+          new Error('いいねを削除できませんでした')
+        }
+        this.$emit('connectCable')
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    scrollToBottom () {
+      const element = this.$refs.messages
+      element.scrollTop = element.scrollHeight
     }
-    this.$emit('connectCable')
-  } catch (error) {
-    console.log(error)
-  }
-},
   }
 }
 </script>

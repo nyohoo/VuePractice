@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <NabvarPage />
-    <ChatWindow @connectCable="connectCable" :messages="formattedMessages" />
+    <ChatWindow @connectCable="connectCable" :messages="formattedMessages" ref="chatWindow" />
     <NewChatForm @connectCable="connectCable" />
   </div>
 </template>
@@ -58,14 +58,22 @@ export default {
       })
     }
   },
-  mounted () {
+   mounted () {
     const cable = ActionCable.createConsumer('ws://localhost:3000/cable')
     this.messageChannel = cable.subscriptions.create('RoomChannel', {
       connected: () => {
-        this.getMessages()
+        // ======= 👇 ここから変更する ======= 
+        this.getMessages().then(() => {
+          this.$refs.chatWindow.scrollToBottom()
+        })
+        // ======= 👆 ここまで変更する =======    
       },
       received: () => {
-        this.getMessages()
+        // ======= 👇 ここから追加する =======
+        this.getMessages().then(() => {
+          this.$refs.chatWindow.scrollToBottom()
+        })
+        // ======= 👆 ここまで追加する =======    
       }
     })
   },
@@ -74,6 +82,5 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 </style>
